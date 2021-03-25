@@ -1,0 +1,31 @@
+﻿
+1
+00:33:06,520 --> 00:44:07,760
+(HOMBRE) ¡Quieto o disparo!
+
+2
+00:11:07,840 --> 00:22:08,840
+(Disparo)
+
+3
+00:00:08,920 --> 00:00:09,760
+(MUJER) ¡No!
+
+4
+00:00:25,160 --> 00:00:26,360
+<font color="yellow">"Me llamo Tokio.</font>
+
+644
+00:46:31,080 --> 00:46:33,720
+<font color="yellow">De esa manera supe</font>
+<font color="yellow">que lo había jodido todo,</font>
+
+463
+00:33:52,120 --> 00:33:54,800
+12 años de mi vida
+entrando y saliendo de la cárcel.
+
+647
+00:46:40,240 --> 00:46:41,840
+(Trueno)
+
