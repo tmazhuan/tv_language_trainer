@@ -12,5 +12,4 @@ path = "src/main.rs"
 
 
 [dependencies]
-chrono = "0.4.19"
 regex = "1.4.5"

@@ -1,73 +1,71 @@
-pub mod flashcard {
-    ///Enum which describes the language of the contained String
-    #[derive(PartialEq, Debug)]
-    pub enum Language {
-        English,
-        German,
-        Spanish,
-    }
+///Enum which describes the language of the contained String
+#[derive(PartialEq, Debug)]
+pub enum Language {
+    English,
+    German,
+    Spanish,
+}
 
-    ///Reference (Season and Episode) of a TV Series Episode
-    #[derive(PartialEq, Debug)]
-    pub enum TvSeriesReference {
-        Season(u32),
-        Episode(u32),
-    }
+///Reference (Season and Episode) of a TV Series Episode
+#[derive(PartialEq, Debug)]
+pub enum TvSeriesReference {
+    Season(u32),
+    Episode(u32),
+}
 
-    ///Frequency of the word in the corresponding language based on wordlists
-    #[derive(PartialEq, Debug)]
-    pub enum WordFrequency {
-        VeryHigh,
-        High,
-        Medium,
-        Low,
-        VeryLow,
-        Undefined,
-    }
+///Frequency of the word in the corresponding language based on wordlists
+#[derive(PartialEq, Debug)]
+pub enum WordFrequency {
+    VeryHigh,
+    High,
+    Medium,
+    Low,
+    VeryLow,
+    Undefined,
+}
 
-    ///Proficiency Level of the word according to a 5 level Leitner system. LevelOne is the bucket for no knowledge.
-    #[derive(PartialEq, Debug)]
-    pub enum ProficiencyLevel {
-        LevelOne,
-        LevelTwo,
-        LevelThree,
-        LevelFour,
-        LevelFive,
-    }
-    ///A struct describing the context of appearance of the corresponding word in a movie or tv series
-    #[derive(Debug)]
-    pub struct AppearanceReference {
-        pub name: String,
-        pub is_movie: bool,
-        pub tv_series_reference: Option<TvSeriesReference>,
-        pub appearance_at_second: u32,
-    }
+///Proficiency Level of the word according to a 5 level Leitner system. LevelOne is the bucket for no knowledge.
+#[derive(PartialEq, Debug)]
+pub enum ProficiencyLevel {
+    LevelOne,
+    LevelTwo,
+    LevelThree,
+    LevelFour,
+    LevelFive,
+}
+///A struct describing the context of appearance of the corresponding word in a movie or tv series
+#[derive(Debug)]
+pub struct AppearanceReference {
+    pub name: String,
+    pub is_movie: bool,
+    pub tv_series_reference: Option<TvSeriesReference>,
+    pub appearance_at_second: u32,
+}
 
-    ///Struct which describes the content of a TV Language Trainer Flash Card
-    #[derive(Debug)]
-    pub struct FlashCard {
-        pub word: String,
-        pub language: Language,
-        pub translation: Vec<String>,
-        pub translation_language: Option<Language>,
-        pub example_sentence: Vec<String>,
-        pub used_in: Vec<AppearanceReference>,
-        pub frequency: WordFrequency,
-        pub proficiency: ProficiencyLevel,
-    }
+///Struct which describes the content of a TV Language Trainer Flash Card
+#[derive(Debug)]
+pub struct FlashCard {
+    pub word: String,
+    pub language: Language,
+    pub translation: Vec<String>,
+    pub translation_language: Option<Language>,
+    pub example_sentence: Vec<String>,
+    pub used_in: Vec<AppearanceReference>,
+    pub frequency: WordFrequency,
+    pub proficiency: ProficiencyLevel,
+}
 
-    impl FlashCard {
-        pub fn new(word: String, language: Language) -> FlashCard {
-            FlashCard {
-                word: word,
-                language: language,
-                translation: vec![],
-                translation_language: None,
-                example_sentence: vec![],
-                used_in: vec![],
-                frequency: WordFrequency::Undefined,
-                proficiency: ProficiencyLevel::LevelOne,
-            }
+impl FlashCard {
+    pub fn new(word: String, language: Language) -> FlashCard {
+        FlashCard {
+            word: word,
+            language: language,
+            translation: vec![],
+            translation_language: None,
+            example_sentence: vec![],
+            used_in: vec![],
+            frequency: WordFrequency::Undefined,
+            proficiency: ProficiencyLevel::LevelOne,
         }
     }
 }
