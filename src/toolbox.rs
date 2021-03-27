@@ -57,20 +57,24 @@ pub fn get_text(lines: Vec<&str>) -> Option<String> {
         }
     };
 }
-
+///r#"(\d{2}):(\d{2}):(\d{2}).(\d{3}) --> (\d{2}):(\d{2}):(\d{2}).(\d{3})"#
 pub fn get_times(time_line: &str) -> (Duration, Duration) {
     let caps = TIME_REGEX.captures(&time_line).unwrap();
     let from_hour = caps.get(1).unwrap().as_str().parse::<u64>().unwrap();
     let from_minute = caps.get(2).unwrap().as_str().parse::<u64>().unwrap() + from_hour * 60;
     let from_second = caps.get(3).unwrap().as_str().parse::<u64>().unwrap() + from_minute * 60;
-    let from_milli = caps.get(4).unwrap().as_str().parse::<u32>().unwrap();
+    let from_milli = caps.get(4).unwrap().as_str().parse::<u64>().unwrap() + from_second * 1000;
     let to_hour = caps.get(5).unwrap().as_str().parse::<u64>().unwrap();
     let to_minute = caps.get(6).unwrap().as_str().parse::<u64>().unwrap() + to_hour * 60;
     let to_second = caps.get(7).unwrap().as_str().parse::<u64>().unwrap() + to_minute * 60;
-    let to_milli = caps.get(8).unwrap().as_str().parse::<u32>().unwrap();
+    let to_milli = caps.get(8).unwrap().as_str().parse::<u64>().unwrap() + to_second * 1000;
+    let d_from = Duration::from_millis(from_milli);
+    assert_eq!(from_second, d_from.as_secs());
+    let d_to = Duration::from_millis(to_milli);
+    assert_eq!(to_second, d_to.as_secs());
     (
-        Duration::new(from_second, from_milli),
-        Duration::new(to_second, to_milli),
+        Duration::from_millis(from_milli),
+        Duration::from_millis(to_milli),
     )
 }
 

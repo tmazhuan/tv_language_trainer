@@ -1,6 +1,7 @@
 use crate::toolbox;
 use regex::{Match, Regex};
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::fmt;
 use std::fs;
 use std::time::Duration;
@@ -15,14 +16,20 @@ pub struct SubtitleSection {
     pub id: u64,
     pub from: Duration,
     pub to: Duration,
-    pub time_index: u64,
+    pub time_index: u128,
     pub text: String,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct SubtitleSentence {
+    pub time_index: u128,
+    pub sentence: String,
 }
 
 #[derive(Serialize, Deserialize)]
 pub struct Subtitle {
     pub name: String,
-    pub content: Vec<SubtitleSection>,
+    pub content: HashMap<u128, Vec<SubtitleSection>>,
 }
 
 impl SubtitleSection {
@@ -57,7 +64,7 @@ impl SubtitleSection {
                 id: id,
                 from: from,
                 to: to,
-                time_index: from.as_secs(),
+                time_index: from.as_millis(),
                 text: text,
             })
         }
@@ -68,7 +75,6 @@ impl SubtitleSection {
     }
 
     pub fn to_string(&self) -> String {
-        // format!("{}\n{}--{}\n{}", self.id, self.from, self.to, self.text)
         format!("{}\n", self.text)
     }
 }
@@ -90,20 +96,13 @@ impl Subtitle {
     pub fn new(name: String) -> Subtitle {
         Subtitle {
             name,
-            content: Vec::new(),
+            content: HashMap::new(),
         }
     }
     pub fn from_file(name: &str, filename: &str) -> Option<Subtitle> {
         let contents = fs::read_to_string(filename).expect("Something went wrong reading the file");
-        //we split the file into sections
-        // let regex = r#"-->"#;
-        // lazy_static! {
-        //     // let regex = r#"(?m)^\d{1,4}\s+\n"#;
-        //     static ref SECTION_REGEX: Regex = Regex::new(r#"(?m)^\d{1,4}\s+\n"#).unwrap();
-        // }
-        // let regex = Regex::new(&regex).unwrap();
         let matches: Vec<Match> = SECTION_REGEX.find_iter(&contents).collect();
-        let mut sections = Vec::new();
+        let mut sections: HashMap<u128, Vec<SubtitleSection>> = HashMap::new();
         for i in 0..matches.len() - 1 {
             match SubtitleSection::from_string(String::from(
                 contents
@@ -111,17 +110,34 @@ impl Subtitle {
                     .unwrap()
                     .trim(),
             )) {
-                Some(s) => sections.push(s),
+                Some(s) => {
+                    match sections.get_mut(&(s.time_index / 1000)) {
+                        Some(v) => v.push(s),
+                        None => {
+                            sections.insert(s.time_index / 1000, vec![s]);
+                        }
+                    }
+                    //
+                }
                 None => (),
             };
         }
+        //we have one section left at the end
         match SubtitleSection::from_string(String::from(
             contents
                 .get(matches[matches.len() - 1].start()..)
                 .unwrap()
                 .trim(),
         )) {
-            Some(s) => sections.push(s),
+            Some(s) => {
+                match sections.get_mut(&(s.time_index / 1000)) {
+                    Some(v) => v.push(s),
+                    None => {
+                        sections.insert(s.time_index / 1000, vec![s]);
+                    }
+                }
+                //
+            }
             None => (),
         };
         Some(Subtitle {
@@ -131,7 +147,12 @@ impl Subtitle {
     }
     pub fn to_string(&self) -> String {
         let text = self.content.iter().fold(String::new(), |acc, x| {
-            String::from(format!("{}{}", acc, x.to_string()))
+            String::from(format!(
+                "{}{}",
+                acc,
+                x.1.iter()
+                    .fold(String::new(), |acc, x| format!("{}{}", acc, x))
+            ))
         });
         format!("---------{}---------\n{}", self.name, text)
     }
@@ -139,7 +160,12 @@ impl Subtitle {
 impl fmt::Display for Subtitle {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let text = self.content.iter().fold(String::new(), |acc, x| {
-            String::from(format!("{}{}", acc, x.to_string()))
+            String::from(format!(
+                "{}{}",
+                acc,
+                x.1.iter()
+                    .fold(String::new(), |acc, x| format!("{}{}", acc, x))
+            ))
         });
         write!(f, "---------{}---------\n{}", self.name, text)
     }
