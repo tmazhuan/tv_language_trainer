@@ -1,15 +1,16 @@
 use crate::toolbox;
 use regex::{Match, Regex};
+use serde::{Deserialize, Serialize};
 use std::fmt;
 use std::fs;
 use std::time::Duration;
 
-pub enum SectionClass {
-    Id,
-    Time,
-    Text,
-    None,
+lazy_static! {
+    // let regex = r#"(?m)^\d{1,4}\s+\n"#;
+    static ref SECTION_REGEX: Regex = Regex::new(r#"(?m)^\d{1,4}\s+\n"#).unwrap();
 }
+
+#[derive(Serialize, Deserialize)]
 pub struct SubtitleSection {
     pub id: u64,
     pub from: Duration,
@@ -18,6 +19,7 @@ pub struct SubtitleSection {
     pub text: String,
 }
 
+#[derive(Serialize, Deserialize)]
 pub struct Subtitle {
     pub name: String,
     pub content: Vec<SubtitleSection>,
@@ -74,8 +76,9 @@ impl fmt::Display for SubtitleSection {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
             f,
-            "{}\n{}--{}\n{}",
+            "{}-{}\n{}--{}\n{}",
             self.id,
+            self.time_index,
             self.from.as_secs(),
             self.to.as_secs(),
             self.text
@@ -93,10 +96,13 @@ impl Subtitle {
     pub fn from_file(name: &str, filename: &str) -> Option<Subtitle> {
         let contents = fs::read_to_string(filename).expect("Something went wrong reading the file");
         //we split the file into sections
-        let regex = r#"(?m)^\d{1,4}\s+\n"#;
         // let regex = r#"-->"#;
-        let regex = Regex::new(&regex).unwrap();
-        let matches: Vec<Match> = regex.find_iter(&contents).collect();
+        // lazy_static! {
+        //     // let regex = r#"(?m)^\d{1,4}\s+\n"#;
+        //     static ref SECTION_REGEX: Regex = Regex::new(r#"(?m)^\d{1,4}\s+\n"#).unwrap();
+        // }
+        // let regex = Regex::new(&regex).unwrap();
+        let matches: Vec<Match> = SECTION_REGEX.find_iter(&contents).collect();
         let mut sections = Vec::new();
         for i in 0..matches.len() - 1 {
             match SubtitleSection::from_string(String::from(

@@ -1,30 +1,31 @@
 use regex::Regex;
 use std::time::Duration;
 
-pub fn clean_content_string(input: &str) -> String {
-    //<font color="magenta">se estará preguntando</font>
-    let html_font_opening_tag = r#"<font color=".{1,10}">"#;
-    let html_font_closing_tag = r#"</font>"#;
-    let html_italic_opening_tag = r#"<i>"#;
-    let html_italic_closing_tag = r#"</i>"#;
-    let dash = r#"-"#;
-    let quotes = r#"""#;
-    let description = r#"\(.{1,30}\)"#;
-    let regex_expressions: Vec<String> = vec![
-        String::from(html_font_opening_tag),
-        String::from(html_font_closing_tag),
-        String::from(description),
-        String::from(html_italic_opening_tag),
-        String::from(html_italic_closing_tag),
-        String::from(dash),
-        String::from(quotes),
+lazy_static! {
+    static ref CLEAN_REGEX_VEC: Vec<Regex> = vec![
+        Regex::new(&String::from(r#"<font color=".{1,10}">"#)).unwrap(),
+        Regex::new(&String::from(r#"</font>"#)).unwrap(),
+        Regex::new(&String::from(r#"<i>"#)).unwrap(),
+        Regex::new(&String::from(r#"</i>"#)).unwrap(),
+        Regex::new(&String::from(r#"""#)).unwrap(),
+        Regex::new(&String::from(r#"-"#)).unwrap(),
+        Regex::new(&String::from(r#"\(.{1,30}\)"#)).unwrap(),
     ];
+    static ref TIME_REGEX: Regex =
+        Regex::new(r#"(\d{2}):(\d{2}):(\d{2}).(\d{3}) --> (\d{2}):(\d{2}):(\d{2}).(\d{3})"#)
+            .unwrap();
+    static ref SENTENCE_REGEX: Regex = Regex::new(r#"(¿?¡?[A-Z][^\.!?]*[\.!?])"#).unwrap();
+}
+
+pub fn clean_content_string(input: &str) -> String {
     let mut result = String::from(input);
-    for expr in regex_expressions {
-        let regex = Regex::new(&expr).unwrap();
-        result = regex.replace_all(&result, "").into_owned();
+    for i in 0..CLEAN_REGEX_VEC.len() {
+        result = CLEAN_REGEX_VEC
+            .get(i)
+            .unwrap()
+            .replace_all(&result, "")
+            .into_owned();
     }
-    // println!("{}", result);
     result
 }
 
@@ -42,7 +43,6 @@ pub fn get_text(lines: Vec<&str>) -> Option<String> {
             text.push_str(&line.trim());
         }
         None => {
-            // println!("{}", text);
             return Some(text);
         }
     };
@@ -50,22 +50,16 @@ pub fn get_text(lines: Vec<&str>) -> Option<String> {
     match lines.get(2) {
         Some(line) => {
             text.push_str(&line.trim());
-            // println!("{}", text);
             return Some(text);
         }
         None => {
-            // println!("{}", text);
             return Some(text);
         }
     };
 }
 
 pub fn get_times(time_line: &str) -> (Duration, Duration) {
-    let time_regex = r#"(\d{2}):(\d{2}):(\d{2}).(\d{3}) --> (\d{2}):(\d{2}):(\d{2}).(\d{3})"#;
-    // let time_parser = "%H:%M:%S%.f";
-    let time_regex = Regex::new(time_regex).unwrap();
-    // let time_line = time_line.replace(",", ".");
-    let caps = time_regex.captures(&time_line).unwrap();
+    let caps = TIME_REGEX.captures(&time_line).unwrap();
     let from_hour = caps.get(1).unwrap().as_str().parse::<u64>().unwrap();
     let from_minute = caps.get(2).unwrap().as_str().parse::<u64>().unwrap() + from_hour * 60;
     let from_second = caps.get(3).unwrap().as_str().parse::<u64>().unwrap() + from_minute * 60;
@@ -80,4 +74,9 @@ pub fn get_times(time_line: &str) -> (Duration, Duration) {
     )
 }
 
-pub fn extract_sentences(_input: String) {} // -> Vec<String> {}
+pub fn extract_sentences(input: String) -> Vec<String> {
+    SENTENCE_REGEX
+        .captures_iter(&input)
+        .map(|x| format!("{}", &x[1]))
+        .collect()
+}

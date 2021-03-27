@@ -1,19 +1,14 @@
-use regex::Regex;
 use std::fs;
 use std::fs::File;
 use std::io::prelude::*;
 use tv_language_trainer::subtitle::*;
+use tv_language_trainer::toolbox;
 
 fn _test(filename: &str) {
     let contents = fs::read_to_string(filename).expect("Something went wrong reading the file");
     //we split the file into sections
-    let regex = r#"(¿?¡?[A-Z][^\.!?]*[\.!?])"#;
-    // println!("{}", &contents);
-    // let regex = r#"(?sm)^(.*)$"#;
-    // let regex = r#"-->"#;
-    let regex = Regex::new(&regex).unwrap();
-    for cap in regex.captures_iter(&contents) {
-        println!("{}", &cap[1]);
+    for s in toolbox::extract_sentences(contents) {
+        println!("{}", s);
     }
 }
 fn _store_to_file(filename: &str, content: Subtitle) {
@@ -22,13 +17,13 @@ fn _store_to_file(filename: &str, content: Subtitle) {
 }
 
 fn main() {
-    // let filename = "./resources/Subtitles/papel_S01E10.srt";
-    let store_file = "./resources/Subtitles/papel_S01E10.txt";
-    _test(store_file);
+    let filename = "./resources/Subtitles/papel_S01E10_es.srt";
+    let store_file = "./resources/Subtitles/papel_S01E10_es.txt";
+    // _test(store_file);
     // let filename = "./resources/test/test.srt";
     // test(filename);
-    // let casa_del_papel = Subtitle::from_file("casa del Papel", filename);
-    // store_to_file(store_file, casa_del_papel.unwrap());
+    let casa_del_papel = Subtitle::from_file("casa del Papel", filename);
+    _store_to_file(store_file, casa_del_papel.unwrap());
     // println!("{}", casa_del_papel.unwrap());
     // let input = r#"303
     // 00:22:01,440 --> 00:22:03,480
