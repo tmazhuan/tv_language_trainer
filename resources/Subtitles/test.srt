@@ -1,0 +1,48 @@
+
+1
+00:00:06,520 --> 00:00:07,760
+(HOMBRE) ¡Quieto o disparo!
+
+2
+00:00:07,840 --> 00:00:08,840
+(Disparo)
+
+3
+00:00:08,920 --> 00:00:09,760
+(MUJER) ¡No!
+
+4
+00:00:25,160 --> 00:00:26,360
+<font color="yellow">"Me llamo Tokio.</font>
+
+5
+00:00:28,520 --> 00:00:31,800
+<font color="yellow">Pero cuando comenzó esta historia,</font>
+<font color="yellow">no me llamaba así.</font>
+
+6
+00:00:33,680 --> 00:00:34,720
+<font color="yellow">Esta era yo.</font>
+
+7
+00:00:38,040 --> 00:00:39,960
+<font color="yellow">Y este, el amor de mi vida.</font>
+
+8
+00:00:40,040 --> 00:00:42,400
+<font color="yellow">La última vez que lo vi</font>
+<font color="yellow">lo dejé en un charco de sangre</font>
+
+9
+00:00:42,480 --> 00:00:44,240
+<font color="yellow">con los ojos abiertos. Hicimos 15 atracos limpios,</font>
+
+11
+00:00:48,160 --> 00:00:50,560
+<font color="yellow">pero mezclar amor y trabajo</font>
+<font color="yellow">nunca funciona.</font>
+
+12
+00:00:50,640 --> 00:00:54,400
+<font color="yellow">Así que, cuando el segurata disparó,</font>
+<font color="yellow">tuve que cambiar de profesión.</font>

@@ -1,4 +1,3 @@
-use regex::Captures;
 use regex::Regex;
 use std::time::Duration;
 
@@ -16,7 +15,10 @@ lazy_static! {
         Regex::new(r#"(\d{2}):(\d{2}):(\d{2}).(\d{3}) --> (\d{2}):(\d{2}):(\d{2}).(\d{3})"#)
             .unwrap();
     static ref SENTENCE_REGEX: Regex = Regex::new(r#"(¿?¡?[A-Z][^\.!?]*[\.!?])"#).unwrap();
-    static ref SPECIAL_LANGUAGE_REGEX: Regex = Regex::new(r#"¿(?P<content>[^,?]+)\?, "#).unwrap();
+    static ref SPECIAL_LANGUAGE_REGEX: Vec<(Regex, String)> = vec![
+        (Regex::new(r#"¿([^,?]+)\?, "#).unwrap(), String::from("")),
+        (Regex::new(r#"(\.\.\.)"#).unwrap(), String::from(" - "))
+    ];
 }
 
 pub fn clean_content_string(input: &str) -> String {
@@ -32,12 +34,17 @@ pub fn clean_content_string(input: &str) -> String {
 }
 
 pub fn special_language_replacements(input: &str) -> String {
-    String::from(
-        SPECIAL_LANGUAGE_REGEX
-            .replace(input, "")
-            .into_owned()
-            .trim(),
-    )
+    let mut result = String::from(input);
+    for i in 0..SPECIAL_LANGUAGE_REGEX.len() {
+        result = String::from(
+            SPECIAL_LANGUAGE_REGEX[i]
+                .0
+                .replace(&result, &SPECIAL_LANGUAGE_REGEX[i].1)
+                .into_owned()
+                .trim(),
+        )
+    }
+    result
 }
 
 pub fn get_text(lines: Vec<&str>) -> Option<String> {
